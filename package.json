@@ -1,0 +1,27 @@
+{
+  "name": "link-crawl-site",
+  "version": "1.0.0",
+  "description": "recursively crawl a website for hyperlinks",
+  "main": "crawler.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/girish17/link-crawl-site.git"
+  },
+  "keywords": [
+    "crawler",
+    "hyperlink"
+  ],
+  "author": "Girish M",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/girish17/link-crawl-site/issues"
+  },
+  "homepage": "https://github.com/girish17/link-crawl-site#readme",
+  "dependencies": {
+    "crawler": "^1.2.1",
+    "url-parse": "^1.4.7"
+  }
+}
