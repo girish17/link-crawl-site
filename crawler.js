@@ -24,7 +24,6 @@ function crawl() {
         crawl();
     } else {
 
-            requests_made++;
             visitPage(nextPage, crawl);
         
     }
