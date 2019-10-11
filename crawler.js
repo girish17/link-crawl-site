@@ -2,25 +2,26 @@
 
 const request = require('request');
 const cheerio = require('cheerio');
-const mysql   = require('mysql');
 const URL     = require('url-parse');
-var dotenv    = require('dotenv');
+const dotenv  = require('dotenv');
+const redis   = require('redis');
 
 var START_URL = "https://medium.com";
-var MAX_PAGES_TO_VISIT = 100;
+var MAX_PAGES_TO_VISIT = 10;
 var pagesVisited = {};
 var numPagesVisited = 0;
 var pagesToVisit = [];
 var url = new URL(START_URL);
 var baseUrl = url.protocol + "//" + url.hostname;
+var linkCountMap = new Map();
+
+var client = redis.createClient({
+    port: 6379,
+    host: process.env.REDIS_HOST,
+    password: process.env.REDIS_PASSWORD
+})
 
 dotenv.config();
-
-var conn = mysql.createConnection({
-    host: process.env.MYSQL_HOST,
-    user: process.env.MYSQL_USERNAME,
-    password: process.env.MYSQL_PASSWORD
-});
 
 class Reference {
 
@@ -41,26 +42,13 @@ class Reference {
 
 var ReferenceArray = new Array();
 
-/*conn.connect(function(err) {
-    if (err) throw err;
-    console.log("Connected!");
-    conn.query("CREATE DATABASE crawler", function (err, result) {
-      if (err) throw err;
-      console.log("Database created");
-    });
-    let sql =  "CREATE TABLE references (link VARCHAR, count INT, params VARCHAR)";
-    conn.query(sql, function (err, result) {
-        if (err) throw err;
-        console.log("Table created: references");
-    })
-});*/
-
 pagesToVisit.push(START_URL);
 crawl();
 
 function crawl() {
     if (numPagesVisited >= MAX_PAGES_TO_VISIT) {
         console.log("Reached max limit of number of pages to visit.");
+        printLinks();
         return;
     }
     var nextPage = pagesToVisit.pop();
@@ -117,16 +105,48 @@ function collectInternalLinks($) {
         console.log("baseURL: ", baseUrl);
         console.log("relative link: ", link);
         let toVisitURL = new URL(link, baseUrl);
+
+        if(linkCountMap.get(link))
+        {
+            linkCountMap.set(link, linkCountMap.get(link)+1);
+        }
+        else
+        {
+            linkCountMap.set(link, 1);
+        }
+
         let params = new URLSearchParams(toVisitURL.query);
-        let ref = new Reference(toVisitURL.pathname, Array.from(params.keys()).toString());
+        let ref = new Reference(linkCountMap, Array.from(params.keys()).toString());
         console.log("Object to be saved: ", ref);
         ReferenceArray.push(ref);
         pagesToVisit.push(toVisitURL);
     });
+    insertRelativeLinks();
 }
 
-//TODO
-function insertRelativeLinks(RelLink)
+function insertRelativeLinks()
 {
+    ReferenceArray.forEach(element => {
+        console.log("Object to be saved in redis: ", element);
+        client.set(JSON.stringify(element), element.getParams(), function(err) {
+            if(err) {
+                throw err;
+            }
+        });
+    });
+}
 
+function printLinks()
+{
+    console.log("\n***Relative Links-----------Count--------------Params***\n");
+    ReferenceArray.forEach(element => {
+        client.get(JSON.stringify(element),function(err,value) {
+            if (err) {
+              throw err;
+            } else {
+              let tempLink = element.getLink();
+              console.log("\nLink: "+Array.from(tempLink.keys()).toString()+"\nCount: "+Array.from(tempLink.values()).toString()+"\nParam: ",value);
+            }
+        });
+    });
 }
