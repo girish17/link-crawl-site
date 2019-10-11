@@ -22,6 +22,9 @@
   "homepage": "https://github.com/girish17/link-crawl-site#readme",
   "dependencies": {
     "crawler": "^1.2.1",
+    "dotenv": "^8.1.0",
+    "mysql": "^2.17.1",
+    "nodemon": "^1.19.3",
     "url-parse": "^1.4.7"
   }
 }
