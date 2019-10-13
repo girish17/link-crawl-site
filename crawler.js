@@ -44,7 +44,7 @@ pagesToVisit.push(process.env.START_URL);
 crawl();
 
 function crawl() {
-    if (numPagesVisited >= proces.env.MAX_PAGES_TO_VISIT) {
+    if (numPagesVisited >= process.env.MAX_PAGES_TO_VISIT) {
         console.log("Reached max limit of number of pages to visit.");
         printLinks();
         return;
