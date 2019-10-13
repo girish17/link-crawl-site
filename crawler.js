@@ -6,12 +6,12 @@ const URL     = require('url-parse');
 const dotenv  = require('dotenv');
 const redis   = require('redis');
 
-var START_URL = "https://medium.com";
-var MAX_PAGES_TO_VISIT = 10;
+dotenv.config();
+
 var pagesVisited = {};
 var numPagesVisited = 0;
 var pagesToVisit = [];
-var url = new URL(START_URL);
+var url = new URL(process.env.START_URL);
 var baseUrl = url.protocol + "//" + url.hostname;
 var linkCountMap = new Map();
 
@@ -20,8 +20,6 @@ var client = redis.createClient({
     host: process.env.REDIS_HOST,
     password: process.env.REDIS_PASSWORD
 })
-
-dotenv.config();
 
 class Reference {
 
@@ -42,11 +40,11 @@ class Reference {
 
 var ReferenceArray = new Array();
 
-pagesToVisit.push(START_URL);
+pagesToVisit.push(process.env.START_URL);
 crawl();
 
 function crawl() {
-    if (numPagesVisited >= MAX_PAGES_TO_VISIT) {
+    if (numPagesVisited >= proces.env.MAX_PAGES_TO_VISIT) {
         console.log("Reached max limit of number of pages to visit.");
         printLinks();
         return;
