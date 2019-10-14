@@ -12,10 +12,15 @@ This node.js project recursively crawls a website and harvests all possible hype
 ### Environment settings
 
 - Create a `.env` file with following details:
-  - `REDIS_HOST=<host name>` (like localhost)
+  - `REDIS_HOST=<host name>` (like localhost or redis if in a docker container)
   - `REDIS_PASSWORD=<if any>` (can be changed in redis.conf file after installation)
   - `MAX_PAGES_VISITED=<number>` (the max number of pages visited)
   - `START_URL=<URL>` (the website to be visited initially)
+
+### Build and run using docker
+
+- Fork and clone the repository
+- Run `docker-compose up --build` in the cloned directory to launch the crawler
 
 ### Run docker image
 `docker run girish17/link-crawl-site`<br>
