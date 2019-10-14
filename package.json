@@ -4,6 +4,7 @@
   "description": "recursively crawl a website for hyperlinks",
   "main": "crawler.js",
   "scripts": {
+    "start": "node crawler.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
