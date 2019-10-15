@@ -22,9 +22,14 @@ var client = redis.createClient({
 
 class Reference {
 
-    constructor (link, params) {
+    constructor (link, count, params) {
         this.link = link;
+        this.count = count;
         this.params = params;
+    }
+
+    getCount() {
+        return this.count;
     }
 
     getLink () {
@@ -113,9 +118,10 @@ function collectInternalLinks($) {
         }
 
         let params = new URLSearchParams(toVisitURL.query);
-        let ref = new Reference(linkCountMap, Array.from(params.keys()).toString());
-        console.log("Object to be saved: ", ref);
-        ReferenceArray.push(ref);
+        linkCountMap.forEach((count, link) => {
+            let ref = new Reference(link, count, Array.from(params.keys()).toString());
+            ReferenceArray.push(ref);
+        })
         pagesToVisit.push(toVisitURL);
     });
     insertRelativeLinks();
@@ -124,8 +130,8 @@ function collectInternalLinks($) {
 function insertRelativeLinks()
 {
     ReferenceArray.forEach(element => {
-        console.log("Object to be saved in redis: ", element);
-        client.set(JSON.stringify(element), element.getParams(), function(err) {
+        //console.log("Object to be saved in redis: ", element);
+        client.lpush("refList", JSON.stringify(element), function(err) {
             if(err) {
                 throw err;
             }
@@ -135,14 +141,14 @@ function insertRelativeLinks()
 
 function printLinks()
 {
-    console.log("\n***Relative Links-----------Count--------------Params***\n");
+    console.log("\n***Relative Links-----------Count--------------Params***");
     ReferenceArray.forEach(element => {
-        client.get(JSON.stringify(element),function(err,value) {
+        client.lpop("refList", function(err,value) {
+            let refVal = JSON.parse(value);
             if (err) {
               throw err;
             } else {
-              let tempLink = element.getLink();
-              console.log("\nLink: "+Array.from(tempLink.keys()).toString()+"\nCount: "+Array.from(tempLink.values()).toString()+"\nParam: ",value);
+                console.log("\n"+refVal.link+"-----------"+refVal.count+"--------------"+refVal.params);
             }
         });
     });
