@@ -20,6 +20,7 @@ This node.js project recursively crawls a website and harvests all possible hype
 ### Build and run using docker
 
 - Fork and clone the repository
+
 - Run `docker-compose up --build` in the cloned directory to launch the crawler
 
 ### Run docker image
