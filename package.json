@@ -23,9 +23,9 @@
   "homepage": "https://github.com/girish17/link-crawl-site#readme",
   "dependencies": {
     "crawler": "^1.2.1",
-    "dotenv": "^8.1.0",
-    "nodemon": "^1.19.3",
-    "redis": "^2.8.0",
+    "dotenv": "^8.2.0",
+    "nodemon": "^2.0.2",
+    "redis": "^3.0.2",
     "url-parse": "^1.4.7"
   },
   "devDependencies": {}
